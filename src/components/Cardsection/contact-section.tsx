@@ -1,9 +1,7 @@
 'use client'
-import React, { useState } from 'react'
+
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from './card'
-import { Input } from './input'
-import { Textarea } from './textarea'
 import { Button } from '@/components/ui/button'
 import { Phone, Mail, MapPin } from 'lucide-react'
 
@@ -41,9 +39,6 @@ const inputVariants = {
 }
 
 export default function ContactSection() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [message, setMessage] = useState('')
   return (
     <section className="py-12 bg-background">
       <div className="container mx-auto px-4 md:px-6">
@@ -65,31 +60,26 @@ export default function ContactSection() {
               <CardTitle>Send us a message</CardTitle>
             </CardHeader>
             <CardContent>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  console.log({ message, email, name })
-                }}
-                className="space-y-4"
-              >
-                <motion.div variants={inputVariants} initial="hidden" animate="visible" custom={0}>
-                  <Input onChange={(e) => setName(e.target.value)} placeholder="Your Name" />
-                </motion.div>
-                <motion.div variants={inputVariants} initial="hidden" animate="visible" custom={1}>
-                  <Input
-                    onChange={(e) => setEmail(e.target.value)}
-                    type="email"
-                    placeholder="Your Email"
-                  />
-                </motion.div>
+              <form className="space-y-4">
+                <motion.div
+                  variants={inputVariants}
+                  initial="hidden"
+                  animate="visible"
+                  custom={0}
+                ></motion.div>
+                <motion.div
+                  variants={inputVariants}
+                  initial="hidden"
+                  animate="visible"
+                  custom={1}
+                ></motion.div>
 
-                <motion.div variants={inputVariants} initial="hidden" animate="visible" custom={2}>
-                  <Textarea
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Your Message"
-                    rows={4}
-                  />
-                </motion.div>
+                <motion.div
+                  variants={inputVariants}
+                  initial="hidden"
+                  animate="visible"
+                  custom={2}
+                ></motion.div>
                 <motion.div variants={inputVariants} initial="hidden" animate="visible" custom={3}>
                   <Button type="submit" className="w-full">
                     Send Message

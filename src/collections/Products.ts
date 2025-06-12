@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload'
-
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import {
@@ -9,7 +8,7 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
-
+import { slugField } from '@/fields/slug'
 import { Media } from '@/payload-types'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 export const Products: CollectionConfig = {
@@ -108,6 +107,7 @@ export const Products: CollectionConfig = {
         },
       ],
     },
+    ...slugField(),
   ],
   hooks: {
     afterChange: [

@@ -27,7 +27,7 @@ export default function AnimatedHeroSlider({ homepage }: { homepage: Homepage })
     }, 5000)
 
     return () => clearInterval(timer)
-  }, [isAutoPlaying])
+  }, [isAutoPlaying, slides.length])
 
   return (
     <section className="relative w-full h-full overflow-hidden">

@@ -1,18 +1,12 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import type { Product } from '@/payload-types'
-import { draftMode } from 'next/headers'
-import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 type Media = {
   url: string
 }
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string }
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const payload = await getPayload({ config: configPromise })
 
   const product = (
@@ -24,7 +18,7 @@ export async function generateMetadata({
       pagination: false,
       where: {
         slug: {
-          equals: params.slug,
+          equals: (await params).slug,
         },
       },
     })
@@ -46,12 +40,12 @@ export async function generateMetadata({
     },
     openGraph: {
       title: product.title,
-      url: (product.meta?.image as Media)?.url!,
+      url: (product.meta?.image as Media)?.url ?? '',
       description: product?.meta?.description ?? '',
       siteName: 'https://totalengg.in',
       images: [
         {
-          url: (product.meta?.image as Media)?.url!,
+          url: (product.meta?.image as Media)?.url ?? '',
           width: '800',
           height: '800',
         },
@@ -79,17 +73,25 @@ export async function generateStaticParams() {
   return params
 }
 
-type Args = {
-  params: {
-    category: string
-  }
-}
-
-export default async function Product({ params: params }: Args) {
-  const { isEnabled: draft } = await draftMode()
-  const { category = '' } = params
-
+export default async function Product({ params }: { params: Promise<{ category: string }> }) {
+  // const { isEnabled: draft } = await draftMode()
+  const { category = '' } = await params
+  // const url = '/products/' + category
   const payload = await getPayload({ config: configPromise })
+  // const product = (
+  //   await payload.find({
+  //     collection: 'products',
+
+  //     limit: 1,
+  //     overrideAccess: false,
+  //     pagination: false,
+  //     where: {
+  //       slug: {
+  //         equals: category,
+  //       },
+  //     },
+  //   })
+  // ).docs[0]
 
   const subcategories = (
     await payload.find({
@@ -104,6 +106,30 @@ export default async function Product({ params: params }: Args) {
       },
     })
   ).docs[0].subcategories
+
+  // export default async function Product(
+  //   context: { params: { category: string } } | Promise<{ params: { category: string } }>,
+  // ) {
+  //   const { params } = await Promise.resolve(context)
+  //   const category = params.category
+  //   const { isEnabled: draft } = await draftMode()
+  //   // const category = params?.category ?? ''
+
+  //   const payload = await getPayload({ config: configPromise })
+
+  //   const subcategories = (
+  //     await payload.find({
+  //       collection: 'categories',
+  //       depth: 2,
+  //       limit: 12,
+  //       overrideAccess: false,
+  //       where: {
+  //         slug: {
+  //           equals: category,
+  //         },
+  //       },
+  //     })
+  //   ).docs[0].subcategories
 
   return (
     <div className="min-h-screen flex flex-col bg-white">

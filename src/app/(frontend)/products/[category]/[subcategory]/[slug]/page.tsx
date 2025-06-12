@@ -2,16 +2,12 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import type { Media, Product } from '@/payload-types'
 import { draftMode } from 'next/headers'
-import { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { RichText } from '@/components/RichText'
 import { articleSchema, imageSchema } from '@/components/Schema'
 import Script from 'next/script'
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string }
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const payload = await getPayload({ config: configPromise })
 
   const product = (
@@ -23,7 +19,7 @@ export async function generateMetadata({
       pagination: false,
       where: {
         slug: {
-          equals: params.slug,
+          equals: (await params).slug,
         },
       },
     })
@@ -46,12 +42,12 @@ export async function generateMetadata({
     },
     openGraph: {
       title: product.title,
-      url: (product.meta?.image as Media)?.url!,
+      url: (product.meta?.image as Media)?.url ?? '',
       description: product?.meta?.description ?? '',
       siteName: 'https://totalengg.in',
       images: [
         {
-          url: (product.meta?.image as Media)?.url!,
+          url: (product.meta?.image as Media)?.url ?? '',
           width: '800',
           height: '800',
         },
@@ -79,15 +75,9 @@ export async function generateStaticParams() {
   return params
 }
 
-type Args = {
-  params: {
-    slug: string
-  }
-}
-
-export default async function Product({ params: params }: Args) {
+export default async function Product({ params }: { params: Promise<{ slug: string }> }) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = '' } = params
+  const { slug = '' } = await params
 
   const payload = await getPayload({ config: configPromise })
   const product = (
@@ -110,11 +100,11 @@ export default async function Product({ params: params }: Args) {
     typeof product.heroImage === 'object' &&
     product.heroImage !== null &&
     'url' in product.heroImage
-      ? (product.heroImage.url ?? '/placeholder.jpg') // <- THIS ENSURES it's never null
+      ? (product.heroImage.url ?? '/placeholder.jpg')
       : '/placeholder.jpg'
   return (
     <>
-      <Script type={'application/ld+json'} strategy={'lazyOnload'}>
+      <Script id="product-json-ld" type="application/ld+json" strategy="lazyOnload">
         {JSON.stringify(schema)}
       </Script>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -122,15 +112,16 @@ export default async function Product({ params: params }: Args) {
           <div className="max-w-6xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                {/* Image Gallery Section - Enhanced */}
                 <div className="p-4 sm:p-6 bg-gray-50">
                   <div className="relative h-72 sm:h-[400px] rounded-xl overflow-hidden border border-gray-100 shadow-lg bg-white group flex items-center justify-center">
-                    <img
+                    <Image
                       src={selectedImage}
                       alt={product.title}
+                      width={500}
+                      height={384}
                       className="w-full h-full object-contain p-4 sm:p-4 transition-all duration-500 transform hover:scale-105"
                     />
-                    {/* Slider Navigation Arrows - visible on both mobile and desktop */}
+
                     <div className="flex absolute inset-0 items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button className="p-2 rounded-full bg-white/90 shadow-md hover:shadow-lg transition-all text-gray-800 hover:text-red-600">
                         <svg
@@ -166,7 +157,7 @@ export default async function Product({ params: params }: Args) {
                   </div>
                   <div className="grid grid-cols-4 gap-3 sm:gap-4 mt-4 sm:mt-6"></div>
                 </div>
-                {/* Product Details Section */}
+
                 <div className="p-2 sm:p-6 lg:p-8">
                   <div className="space-y-4 sm:space-y-6">
                     <div>

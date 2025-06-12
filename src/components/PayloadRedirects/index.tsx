@@ -1,7 +1,5 @@
 import type React from 'react'
-import type { Product } from '@/payload-types'
 
-import { getCachedDocument } from '@/utilities/getDocument'
 import { getCachedRedirects } from '@/utilities/getRedirects'
 import { notFound, redirect } from 'next/navigation'
 
@@ -21,28 +19,8 @@ export const PayloadRedirects: React.FC<Props> = async ({ disableNotFound, url }
       redirect(redirectItem.to.url)
     }
 
-    let redirectUrl: string
+    if (disableNotFound) return null
 
-    if (typeof redirectItem.to?.reference?.value === 'string') {
-      const collection = redirectItem.to?.reference?.relationTo
-      const id = redirectItem.to?.reference?.value
-
-      const document = (await getCachedDocument(collection, id)()) as Product
-      redirectUrl = `${redirectItem.to?.reference?.relationTo !== 'categories' ? `/${redirectItem.to?.reference?.relationTo}` : ''}/${
-        document?.slug
-      }`
-    } else {
-      redirectUrl = `${redirectItem.to?.reference?.relationTo !== 'categories' ? `/${redirectItem.to?.reference?.relationTo}` : ''}/${
-        typeof redirectItem.to?.reference?.value === 'object'
-          ? redirectItem.to?.reference?.value?.slug
-          : ''
-      }`
-    }
-
-    if (redirectUrl) redirect(redirectUrl)
+    notFound()
   }
-
-  if (disableNotFound) return null
-
-  notFound()
 }

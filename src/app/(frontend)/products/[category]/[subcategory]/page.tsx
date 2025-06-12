@@ -2,14 +2,14 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import type { Product } from '@/payload-types'
 import { draftMode } from 'next/headers'
-
+import Image from 'next/image'
 import Link from 'next/link'
 
-type Args = {
-  category: string
-  subcategory: string
-}
-export default async function Product({ params }: { params: Promise<Args> }) {
+export default async function Product({
+  params,
+}: {
+  params: Promise<{ subcategory: string; category: string }>
+}) {
   const { isEnabled: draft } = await draftMode()
   const { subcategory, category } = await params
 
@@ -104,7 +104,7 @@ export default async function Product({ params }: { params: Promise<Args> }) {
                           {typeof product.heroImage === 'object' &&
                           product.heroImage !== null &&
                           'url' in product.heroImage ? (
-                            <img
+                            <Image
                               src={product.heroImage.url ?? '/placeholder.jpg'}
                               alt={product.title}
                               width={500}

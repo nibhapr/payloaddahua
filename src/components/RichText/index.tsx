@@ -9,12 +9,5 @@ type Props = {
 export function RichText(props: Props) {
   const { className, ...rest } = props
 
-  return (
-    <RichTextConverter
-      {...rest}
-      className={className}
-      // @ts-ignore
-      converters={jsxConverter}
-    />
-  )
+  return <RichTextConverter {...rest} className={className} converters={jsxConverter} />
 }
