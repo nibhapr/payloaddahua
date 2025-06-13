@@ -73,6 +73,7 @@ export interface Config {
     products: Product;
     categories: Category;
     subcategories: Subcategory;
+    navbar: Navbar;
     redirects: Redirect;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,6 +87,7 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     subcategories: SubcategoriesSelect<false> | SubcategoriesSelect<true>;
+    navbar: NavbarSelect<false> | NavbarSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -255,6 +257,36 @@ export interface Subcategory {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navbar".
+ */
+export interface Navbar {
+  id: string;
+  title: string;
+  buttons?:
+    | {
+        label: string;
+        url?: string | null;
+        megaMenu?:
+          | {
+              title: string;
+              links?:
+                | {
+                    label: string;
+                    url: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -304,6 +336,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'subcategories';
         value: string | Subcategory;
+      } | null)
+    | ({
+        relationTo: 'navbar';
+        value: string | Navbar;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -447,6 +483,35 @@ export interface SubcategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navbar_select".
+ */
+export interface NavbarSelect<T extends boolean = true> {
+  title?: T;
+  buttons?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        megaMenu?:
+          | T
+          | {
+              title?: T;
+              links?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -501,6 +566,8 @@ export interface SiteSetting {
   id: string;
   'site-name': string;
   logo?: (string | null) | Media;
+  Telephone: string;
+  Email: string;
   favicon: string | Media;
   socials?:
     | {
@@ -538,6 +605,8 @@ export interface Homepage {
 export interface SiteSettingsSelect<T extends boolean = true> {
   'site-name'?: T;
   logo?: T;
+  Telephone?: T;
+  Email?: T;
   favicon?: T;
   socials?:
     | T

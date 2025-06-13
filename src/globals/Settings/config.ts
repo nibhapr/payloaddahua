@@ -21,6 +21,23 @@ export const SiteSettings: GlobalConfig = {
       relationTo: 'media',
     },
     {
+      name: 'Telephone',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'Email',
+      type: 'text',
+      required: true,
+      validate: (value: any) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(value)) {
+          return 'Please enter a valid email address'
+        }
+        return true
+      },
+    },
+    {
       name: 'favicon',
       label: 'Favicon',
       type: 'upload',
