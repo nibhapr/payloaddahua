@@ -1,49 +1,38 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 // import { usePathname } from 'next/navigation'
 import React, { useEffect, useState, useRef, useCallback } from 'react'
-import type { Media } from '@/payload-types'
-import { Logo } from '@/components/Logo/Logo'
+import type { Category, Media, Navbar } from '@/payload-types'
+
 // import { useHeaderTheme } from '@/providers/HeaderTheme'
 
-const dropdownMenus = {
-  technologies: [
-    { title: 'Tandemvu-technology', href: 'Tandemvu' },
-    { title: 'Acusense-technology', href: 'Acusense' },
-    { title: 'Darkfighter-technology', href: 'Darkfighter' },
-    { title: 'Colorvu-technology', href: 'Colorvu' },
-  ],
-  solutions: [
-    { title: 'Manufacturing solution in Dubai', href: 'Manufacturing' },
-    { title: 'Retail solution in Dubai', href: 'Retail' },
-    { title: 'Healthcare solution in Dubai', href: 'Healthcare' },
-    { title: 'Education Solution in Dubai', href: 'Education' },
-  ],
-}
-interface NavbarCategory {
-  _id: string
-  name: string
-  slug: string
-  order: number
-  isActive: boolean
-  createdAt: string
-}
 interface HeaderClientProps {
   logo: Media
   favicon: Media
+  telephone: string
+  email: string
+  navbar: Navbar[]
+  categories: Category[]
 }
 
-export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
-  /* Storing the value in a useState to avoid hydration errors */
-  // const [theme, setTheme] = useState<string | null>(null)
-  // const { headerTheme, setHeaderTheme } = useHeaderTheme()
-  // const pathname = usePathname()
+export const HeaderClient: React.FC<HeaderClientProps> = ({
+  logo,
+  telephone,
+  favicon,
+  email,
+  navbar,
+  categories,
+}) => {
+  const logoUrl =
+    logo?.url?.startsWith('http') || !logo?.url
+      ? logo.url
+      : `${process.env.NEXT_PUBLIC_SERVER_URL}${logo.url}`
   const [isOpen, setIsOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
-
+  console.log('Resolved Logo URL:', logoUrl)
   const navRef = useRef<HTMLDivElement>(null)
-  const [navbarCategories] = useState<NavbarCategory[]>([])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -77,18 +66,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
     [activeDropdown],
   )
 
-  // useEffect(() => {
-  //   setHeaderTheme(null)
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [pathname])
-
-  // useEffect(() => {
-  //   if (headerTheme && headerTheme !== theme) setTheme(headerTheme)
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [headerTheme])
-
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50" ref={navRef}>
+    <header className="bg-white text-black shadow-lg sticky top-0 z-50" ref={navRef}>
       {/* Top bar - Made responsive */}
       <div className="bg-gradient-to-r from-red-900 to-black text-white py-2 sm:py-3 px-4">
         <div className="container mx-auto flex flex-col sm:flex-row justify-end sm:space-x-8 space-y-2 sm:space-y-0 text-xs sm:text-sm font-medium">
@@ -110,7 +89,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
               />
             </svg>
-            +971 50 989 3134
+            {telephone}
           </a>
           <a
             href="mailto:sales@hikvision-dubai.ae"
@@ -130,7 +109,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
               />
             </svg>
-            sales@hikvisionuae.ae
+            {email}
           </a>
         </div>
       </div>
@@ -143,10 +122,19 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
             onClick={() => setIsOpen(false)}
           >
             <div className="relative h-12 sm:h-16 w-[220px] sm:w-[300px] group">
-              <Logo
-                image={logo?.url || ''}
-                className="h-10 sm:h-14 w-auto object-contain transition-all duration-300 group-hover:brightness-110"
-              />
+              {logo?.url && (
+                <Image
+                  src={
+                    logo.url.startsWith('http')
+                      ? logo.url
+                      : `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001'}${logo.url}`
+                  }
+                  alt={logo.alt || 'Site Logo'}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 220px, 300px"
+                />
+              )}
             </div>
           </Link>
 
@@ -183,11 +171,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
               </Link>
             </div>
 
-            <div
-              className="relative group"
-              onMouseEnter={() => handleDropdown('products')}
-              onMouseLeave={() => handleDropdown(null)}
-            >
+            <div className="relative group">
               <button
                 className="flex items-center text-gray-800 hover:text-red-600 font-medium 
                 transition-all duration-300 hover:-translate-y-0.5 group relative
@@ -220,14 +204,14 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                 }}
                 role="menu"
               >
-                {navbarCategories.map((category) => (
+                {categories.map((category) => (
                   <Link
-                    key={category._id}
+                    key={category.id}
                     href={`/${category.slug}`}
                     className="block px-6 py-3 text-gray-800 hover:bg-red-50 
                       hover:text-red-600 transition-all duration-300"
                   >
-                    {category.name}
+                    {category.title}
                   </Link>
                 ))}
               </div>
@@ -270,7 +254,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                 }}
                 role="menu"
               >
-                {dropdownMenus.technologies.map((item) => (
+                {/* {dropdownMenus.technologies.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -279,7 +263,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                   >
                     {item.title}
                   </Link>
-                ))}
+                ))} */}
               </div>
             </div>
 
@@ -320,7 +304,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                 }}
                 role="menu"
               >
-                {dropdownMenus.solutions.map((item) => (
+                {/* {dropdownMenus.solutions.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -329,7 +313,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                   >
                     {item.title}
                   </Link>
-                ))}
+                ))} */}
               </div>
             </div>
 
@@ -444,7 +428,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
 
                 {activeDropdown === 'products' && (
                   <div className="bg-gray-50 max-h-[60vh] overflow-y-auto">
-                    {navbarCategories.map((category) => (
+                    {/* {navbarCategories.map((category) => (
                       <Link
                         key={category._id}
                         href={`/${category.slug}`}
@@ -454,7 +438,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                       >
                         {category.name}
                       </Link>
-                    ))}
+                    ))} */}
                   </div>
                 )}
               </div>
@@ -498,7 +482,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
 
                 {activeDropdown === 'technologies' && (
                   <div className="bg-gray-50">
-                    {dropdownMenus.technologies.map((item) => (
+                    {/* {dropdownMenus.technologies.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
@@ -508,7 +492,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                       >
                         {item.title}
                       </Link>
-                    ))}
+                    ))} */}
                   </div>
                 )}
               </div>
@@ -552,7 +536,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
 
                 {activeDropdown === 'solutions' && (
                   <div className="bg-gray-50">
-                    {dropdownMenus.solutions.map((item) => (
+                    {/* {dropdownMenus.solutions.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
@@ -562,7 +546,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ logo }) => {
                       >
                         {item.title}
                       </Link>
-                    ))}
+                    ))} */}
                   </div>
                 )}
               </div>

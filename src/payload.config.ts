@@ -16,6 +16,7 @@ import { revalidateRedirects } from './hooks/revalidateRedirects'
 import { Homepage } from './collections/homepage'
 
 import { Subcategories } from './collections/Subcategories'
+import { Navbar } from './collections/Navbar'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -27,7 +28,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, ServicePage, Products, Categories, Subcategories],
+  collections: [Users, Media, ServicePage, Products, Categories, Subcategories, Navbar],
   editor: lexicalEditor(),
   globals: [SiteSettings, Homepage],
   secret: process.env.PAYLOAD_SECRET || '',
